@@ -1,0 +1,58 @@
+plugins {
+	id 'java'
+}
+
+// Tareas personalizadas para el proyecto multimodulo
+tasks.register('cleanAll') {
+	description = 'Limpia todos los submódulos'
+	group = 'build'
+	dependsOn subprojects.collect { ":${it.name}:clean" }
+}
+
+tasks.register('buildAll') {
+	description = 'Construye todos los submódulos'
+	group = 'build'
+	dependsOn subprojects.collect { ":${it.name}:build" }
+}
+
+tasks.register('testAll') {
+	description = 'Ejecuta tests de todos los submódulos'
+	group = 'verification'
+	dependsOn subprojects.collect { ":${it.name}:test" }
+}
+
+tasks.register('bootRunAll') {
+	description = 'Lista comandos para ejecutar todos los servicios'
+	group = 'application'
+	doLast {
+		println """
+        🚀 Para ejecutar todos los microservicios:
+        
+        Terminal 1: ./gradlew :eureka-server:bootRun
+        Terminal 2: ./gradlew :config-server:bootRun  
+        Terminal 3: ./gradlew :zuul-auth-service:bootRun
+        Terminal 4: ./gradlew :productos-service:bootRun
+        Terminal 5: ./gradlew :pedidos-service:bootRun
+        """
+	}
+}
+
+// Información del build
+tasks.register('projectInfo') {
+	description = 'Muestra información del proyecto'
+	group = 'help'
+	doLast {
+		println """
+        Sistema de Pedidos - Microservicios
+        =====================================
+        Grupo: ${group}
+        Versión: ${version}
+        Java: ${java.toolchain.languageVersion.get()}
+        Spring Boot: 2.7.14
+        Spring Cloud: 2021.0.8
+        
+        Módulos incluidos:
+        ${subprojects.collect { "- ${it.name}" }.join('\n        ')}
+        """
+	}
+}
