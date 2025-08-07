@@ -1,0 +1,52 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8080
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: auth
+          uri: lb://auth
+          predicates:
+            - Path=/api/v1/auth/**, /api/auth/v3/api-docs
+    security:
+      domain: https://dev-9pn-820c.us.auth0.com
+      oauth2:
+        client:
+          registration:
+            auth0:
+              client-id: ikWPpY8zw0AkwBUhsKj6rRyqdX2m7Isi
+              client-secret: KPrWBYxz754nn-4pJKUnU8DZnmGpPoU-0dCpQg_fr2ysq0AbIw-9NLxoO4cTec-W
+              redirect-uri: "{baseUrl}/webjars/swagger-ui/4.15.5/index.html"
+              authorization-grant-type: authorization_code
+              scope: openid, profile, email
+          provider:
+            auth0:
+              authorization-uri: ${spring.security.domain}/authorize
+              token-uri: ${spring.security.domain}/oauth/token
+              user-info-uri: ${spring.security.domain}/userinfo
+              jwk-set-uri: ${spring.security.domain}/.well-known/jwks.json
+              user-name-attribute: sub
+        resourceserver:
+          jwt:
+            jwk-set-uri: https://dev-9pn-820c.us.auth0.com/.well-known/jwks.json
+springdoc:
+  enable-native-support: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway Service
+    oauth:
+      client-id: ikWPpY8zw0AkwBUhsKj6rRyqdX2m7Isi
+      client-secret: KPrWBYxz754nn-4pJKUnU8DZnmGpPoU-0dCpQg_fr2ysq0AbIw-9NLxoO4cTec-W
