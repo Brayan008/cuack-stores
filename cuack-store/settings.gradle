@@ -1,3 +1,3 @@
 rootProject.name = 'cuack-store'
 
-include ('eureka-server', 'config-server')
+include ('commons','eureka-server', 'config-server', 'gateway-server', 'inventory')

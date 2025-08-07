@@ -1,0 +1,31 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8081
+spring:
+  application:
+    name: msvc-inventory
+  r2dbc:
+    url: r2dbc:mssql://localhost:1433/quack_store
+    username: sa
+    password: mares123!
+    pool:
+      initial-size: 5
+      max-size: 20
+      max-idle-time: 30m
+      validation-query: SELECT 1
+openapi:
+  service:
+    title: inventory doc
+    version: 1.0.0
+    url-gateway: http://localhost:8080
+    url-inventory: http://localhost:8081
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    enabled: true
+    path: /api/inventory/v3/api-docs

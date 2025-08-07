@@ -30,9 +30,8 @@ tasks.register('bootRunAll') {
         
         Terminal 1: ./gradlew :eureka-server:bootRun
         Terminal 2: ./gradlew :config-server:bootRun  
-        Terminal 3: ./gradlew :zuul-auth-service:bootRun
-        Terminal 4: ./gradlew :productos-service:bootRun
-        Terminal 5: ./gradlew :pedidos-service:bootRun
+        Terminal 3: ./gradlew :gateway-server:bootRun
+        Terminal 4: ./gradlew :inventory:bootRun
         """
 	}
 }
