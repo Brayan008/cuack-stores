@@ -62,7 +62,7 @@ Este proyecto es una solución fullstack desarrollada como parte de un examen t�
 
 El proyecto sigue un enfoque de microservicios con frontend desacoplado. El Gateway expone los servicios y controla la autenticación. La comunicación entre microservicios se maneja vía Eureka (Service Discovery). Se intento realizar via zuul pero dio problemas de incompatibilidad, otra opcion fue consul.
 
-`
+```
     [Usuario] ⇄ [Frontend React]
                ↓
         [Gateway Server]
@@ -73,9 +73,10 @@ Orders Service Inventory Service
               ↓ ↓
     [SQL Server Database]
 
-`
+```
 
 ## 📦 Estructura del proyecto
+```
 cuack-store/
 ├── cuack-store/         # Backend (Spring Boot microservices)
 │   ├── commons/
@@ -88,3 +89,4 @@ cuack-store/
 ├── db/
 │   └── quack-store.sql  # Script de carga inicial SQL Server
 └── docker-compose.yml
+```
