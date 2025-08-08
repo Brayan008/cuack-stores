@@ -155,7 +155,7 @@ BEGIN
         comments, user_ip
     ) VALUES (
         'STORE001', 'Juan Pérez', 'PENDIENTE', 'María González', 'maria.gonzalez@email.com',
-        '555-0101', 'Av. Principal 123, Querétaro', '12345678', 'RFC',
+        '555-0101', 'Av. Principal 123, Guanajuato', '12345678', 'RFC',
         'Cliente frecuente, solicita entrega rápida', '192.168.1.100'
     );
     
@@ -166,7 +166,7 @@ BEGIN
         created_at, updated_at, comments, user_ip
     ) VALUES (
         'STORE001', 'Ana López', 'ENTREGADO', 'Carlos Rodríguez', 'carlos.rodriguez@email.com',
-        '555-0102', 'Calle Reforma 456, Querétaro', '87654321', 'RFC',
+        '555-0102', 'Calle Reforma 456, Guanajuato', '87654321', 'RFC',
         DATEADD(DAY, -2, GETDATE()), DATEADD(DAY, -1, GETDATE()),
         'Pedido entregado sin problemas', '192.168.1.101'
     );
@@ -178,7 +178,7 @@ BEGIN
         created_at, updated_at, comments, user_ip
     ) VALUES (
         'STORE002', 'Roberto Silva', 'CANCELADO', 'Laura Martínez', 'laura.martinez@email.com',
-        '555-0103', 'Blvd. Constitución 789, Querétaro', '11223344', 'RFC',
+        '555-0103', 'Blvd. Constitución 789, Guanajuato', '11223344', 'RFC',
         DATEADD(HOUR, -1, GETDATE()), DATEADD(MINUTE, -30, GETDATE()),
         'Cliente canceló por cambio de planes', '192.168.1.102'
     );
@@ -189,14 +189,14 @@ BEGIN
         unit_price, discount_percentage, discount_amount, subtotal
     ) VALUES 
     (1, 'HAWA001', 'Camioneta Ford F-150', 1, 850000.00, 5.00, 42500.00, 807500.00),
-    (1, 'HAWA004', 'Camioneta Toyota Tacoma', 1, 650000.00, 2.00, 13000.00, 637000.00);
+    (1, 'HAWA004', 'Tsuru tuneado', 1, 650000.00, 2.00, 13000.00, 637000.00);
     
     -- Items para el Pedido 2  
     INSERT INTO order_items (
         order_id, product_hawa, product_name, quantity, 
         unit_price, discount_percentage, discount_amount, subtotal
     ) VALUES 
-    (2, 'HAWA003', 'Camioneta RAM 1500', 2, 920000.00, 7.00, 128800.00, 1711200.00);
+    (2, 'HAWA003', 'Chevy', 2, 920000.00, 7.00, 128800.00, 1711200.00);
     
     -- Items para el Pedido 3
     INSERT INTO order_items (
