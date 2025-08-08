@@ -49,7 +49,6 @@ public class OrderBusinessImpl implements OrderBusiness {
                 }
             }
 
-            // 2. Crear la entidad Order
             Order order = Order.builder()
                     .storeId(createDTO.getStoreId())
                     .sellerName(createDTO.getSellerName())
@@ -59,7 +58,6 @@ public class OrderBusinessImpl implements OrderBusiness {
                     .userIp(createDTO.getUserIp())
                     .build();
 
-            // 3. Crear los items del pedido
             for (OrderItemCreateDTO itemDTO : createDTO.getItems()) {
                 InventoryProductDTO product = inventoryService.getProduct(itemDTO.getProductHawa());
 
@@ -74,11 +72,9 @@ public class OrderBusinessImpl implements OrderBusiness {
                 order.addItem(orderItem);
             }
 
-            // 4. Guardar el pedido
             order = orderRepository.save(order);
             log.info("Pedido creado con ID: {}", order.getId());
 
-            // 5. Decrementar stock de los productos (Bonus)
             for (OrderItem item : order.getItems()) {
                 boolean stockDecremented = inventoryService.decrementStock(
                         item.getProductHawa(),
@@ -87,7 +83,6 @@ public class OrderBusinessImpl implements OrderBusiness {
 
                 if (!stockDecremented) {
                     log.warn("No se pudo decrementar stock para producto: {}", item.getProductHawa());
-                    // En un escenario real, podríamos implementar una compensación
                 }
             }
 
@@ -141,14 +136,11 @@ public class OrderBusinessImpl implements OrderBusiness {
         OrderStatus newStatus = OrderStatus.valueOf(statusDTO.getStatus());
         OrderStatus previousStatus = order.getStatus();
 
-        // Validaciones de negocio
         validateStatusChange(order, newStatus);
 
-        // Actualizar estatus
         order.setStatus(newStatus);
         order = orderRepository.save(order);
 
-        // Manejar cambios de stock según estatus (Bonus)
         handleStockChangesForStatusUpdate(order, previousStatus, newStatus);
 
         log.info("Estatus del pedido {} cambiado de {} a {}", id, previousStatus, newStatus);

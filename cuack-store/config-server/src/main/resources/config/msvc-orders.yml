@@ -50,7 +50,7 @@ springdoc:
 feign:
   client:
     config:
-      inventory-service:
+      msvc-inventory:
         connectTimeout: 10000
         readTimeout: 60000
         loggerLevel: full

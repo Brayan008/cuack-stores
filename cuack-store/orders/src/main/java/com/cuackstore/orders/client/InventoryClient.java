@@ -6,31 +6,30 @@ import com.cuackstore.commons.dto.order.InventoryProductDTO;
 import com.cuackstore.commons.dto.order.StockOperationDTO;
 import com.cuackstore.orders.client.impl.InventoryClientFallback;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
-        name = "inventory-service",
+        name = "msvc-inventory",
         fallback = InventoryClientFallback.class
 )
 public interface InventoryClient {
 
-    @GetMapping("/api/inventory/product/{hawa}")
+    @GetMapping("/api/v1/inventory/product/{hawa}")
     ApiResponseDTO<InventoryProductDTO> getProductByHawa(@PathVariable String hawa);
 
-    @GetMapping("/api/inventory/product/{hawa}/availability")
+    @GetMapping("/api/v1/inventory/product/{hawa}/availability")
     ApiResponseDTO<AvailabilityResponseDTO> checkAvailability(@PathVariable String hawa);
 
-    @PutMapping("/api/inventory/product/{hawa}/stock/decrement")
+    @PutMapping("/api/v1/inventory/product/{hawa}/stock/decrement")
     ApiResponseDTO<InventoryProductDTO> decrementStock(
             @PathVariable String hawa,
             @RequestBody StockOperationDTO stockOperation
     );
 
-    @PutMapping("/api/inventory/product/{hawa}/stock/increment")
+    @PutMapping("/api/v1/inventory/product/{hawa}/stock/increment")
     ApiResponseDTO<InventoryProductDTO> incrementStock(
             @PathVariable String hawa,
             @RequestBody StockOperationDTO stockOperation

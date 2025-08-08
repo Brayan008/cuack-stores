@@ -1,5 +1,6 @@
 package com.cuackstore.commons.dto.order;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +36,6 @@ public class OrderCreateDTO {
 
     private String comments;
 
-    // IP será capturada automáticamente en el controller
+    @Hidden
     private String userIp;
 }
