@@ -18,7 +18,7 @@ spring:
       validation-query: SELECT 1
 openapi:
   service:
-    title: inventory doc
+    title: Inventory doc
     version: 1.0.0
     url-gateway: http://localhost:8080
     url-inventory: http://localhost:8081

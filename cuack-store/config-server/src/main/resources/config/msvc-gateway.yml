@@ -14,6 +14,10 @@ spring:
           uri: lb://msvc-inventory
           predicates:
             - Path=/api/v1/inventory/**, /api/inventory/v3/api-docs
+        - id: msvc-orders
+          uri: lb://msvc-orders
+          predicates:
+            - Path=/api/v1/orders/**, /api/orders/v3/api-docs
     security:
       domain: https://dev-9pn-820c.us.auth0.com
       oauth2:
@@ -48,6 +52,8 @@ springdoc:
         name: API Gateway Service
       - url: /api/inventory/v3/api-docs
         name: Inventory Service
+      - url: /api/orders/v3/api-docs
+        name: Orders Service
     oauth:
       client-id: ikWPpY8zw0AkwBUhsKj6rRyqdX2m7Isi
       client-secret: KPrWBYxz754nn-4pJKUnU8DZnmGpPoU-0dCpQg_fr2ysq0AbIw-9NLxoO4cTec-W

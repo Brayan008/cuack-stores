@@ -19,6 +19,7 @@ public class GatewayServerApplication {
         return builder
                 .routes()
                 .route(r -> r.path("/api/inventory/v3/api-docs").and().method(HttpMethod.GET).uri("lb://msvc-inventory"))
+                .route(r -> r.path("/api/orders/v3/api-docs").and().method(HttpMethod.GET).uri("lb://msvc-orders"))
                 .build();
     }
 
