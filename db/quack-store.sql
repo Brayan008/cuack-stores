@@ -34,9 +34,9 @@ BEGIN
     VALUES
     ('HAWA001', 'Camioneta Ford F-150', 'Camioneta pickup Ford F-150 2024, cabina doble', 850000.00, 5.00, 15, 1, 'system'),
     ('HAWA002', 'Camioneta Chevrolet Silverado', 'Camioneta pickup Chevrolet Silverado 2024, cabina regular', 780000.00, 3.00, 8, 1, 'system'),
-    ('HAWA003', 'Camioneta RAM 1500', 'Camioneta pickup RAM 1500 2024, cabina crew cab', 920000.00, 7.00, 12, 1, 'system'),
-    ('HAWA004', 'Camioneta Toyota Tacoma', 'Camioneta pickup Toyota Tacoma 2024, 4x4', 650000.00, 2.00, 20, 1, 'system'),
-    ('HAWA005', 'Camioneta Nissan Frontier', 'Camioneta pickup Nissan Frontier 2024, cabina doble', 580000.00, 4.00, 6, 1, 'system'),
+    ('HAWA003', 'Chevy', 'Chevy Monza 20019, humilde pero poderoso', 920000.00, 7.00, 12, 1, 'system'),
+    ('HAWA004', 'Tsuru tuneado', 'Tsuru, tuneado con buen sonido, 4x4 8 cilindros, le gano a un bmw', 650000.00, 2.00, 20, 1, 'system'),
+    ('HAWA005', 'Voch', 'Vocho 1998, con llantas 25', 580000.00, 4.00, 6, 1, 'system'),
     ('HAWA006', 'Camioneta GMC Sierra', 'Camioneta pickup GMC Sierra 2024, AT4', 890000.00, 6.00, 0, 0, 'system');
 
     PRINT 'Datos de prueba insertados exitosamente';
