@@ -15,10 +15,16 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -29,8 +35,25 @@ public class SecurityConfig {
    private String jwkUri;
 
    @Bean
+   public CorsConfigurationSource corsWebFilter() {
+      CorsConfiguration corsConfig = new CorsConfiguration();
+      corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173"));
+      corsConfig.setMaxAge(3600L);
+      corsConfig.addAllowedMethod("*");
+      corsConfig.addAllowedHeader("*");
+      corsConfig.setAllowCredentials(true);
+
+      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+      source.registerCorsConfiguration("/**", corsConfig);
+
+      return source;
+   }
+
+
+   @Bean
    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
       return http
+              .cors(c -> c.configurationSource(corsWebFilter()))
               .authorizeExchange(exchange -> exchange
                       .pathMatchers("/swagger",
                               "/v3/api-docs/**",
