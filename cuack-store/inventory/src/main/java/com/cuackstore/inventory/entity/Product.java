@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -59,6 +60,7 @@ public class Product {
 
     @Builder.Default
     @Column("created_at")
+    @UpdateTimestamp
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column("updated_at")
@@ -69,10 +71,6 @@ public class Product {
 
     public boolean hasStock() {
         return stock != null && stock > 0;
-    }
-
-    public boolean isAvailable() {
-        return available != null && available && hasStock();
     }
 
     public BigDecimal getFinalPrice() {

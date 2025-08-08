@@ -51,13 +51,11 @@ public class Order {
     @Embedded
     private Customer customer;
 
-    // Estatus del pedido
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @Builder.Default
     private OrderStatus status = OrderStatus.PENDIENTE;
 
-    // Totales del pedido
     @Column(name = "subtotal", precision = 12, scale = 2)
     @Builder.Default
     private BigDecimal subtotal = BigDecimal.ZERO;
@@ -70,12 +68,10 @@ public class Order {
     @Builder.Default
     private BigDecimal total = BigDecimal.ZERO;
 
-    // Items del pedido
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
-    // Comentarios adicionales
     @Column(name = "comments", length = 1000)
     private String comments;
 
@@ -87,18 +83,6 @@ public class Order {
         // Verificar que no hayan pasado más de 10 minutos
         LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
         return createdAt.isAfter(tenMinutesAgo);
-    }
-
-    public boolean isPending() {
-        return status == OrderStatus.PENDIENTE;
-    }
-
-    public boolean isDelivered() {
-        return status == OrderStatus.ENTREGADO;
-    }
-
-    public boolean isCancelled() {
-        return status == OrderStatus.CANCELADO;
     }
 
     public void calculateTotals() {

@@ -2,6 +2,7 @@ package com.cuackstore.orders.business.impl;
 
 import com.cuackstore.commons.dto.order.*;
 import com.cuackstore.commons.enums.OrderStatus;
+import com.cuackstore.commons.exceptions.BusinessException;
 import com.cuackstore.orders.business.OrderBusiness;
 import com.cuackstore.orders.entity.Customer;
 import com.cuackstore.orders.entity.Order;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,65 +35,60 @@ public class OrderBusinessImpl implements OrderBusiness {
     public OrderResponseDTO createOrder(OrderCreateDTO createDTO) {
         log.info("Iniciando creación de pedido para cliente: {}", createDTO.getCustomer().getName());
 
-        try {
-            for (OrderItemCreateDTO itemDTO : createDTO.getItems()) {
-                AvailabilityResponseDTO availability = inventoryService.checkAvailability(itemDTO.getProductHawa());
+        for (OrderItemCreateDTO itemDTO : createDTO.getItems()) {
+            AvailabilityResponseDTO availability = inventoryService.checkAvailability(itemDTO.getProductHawa());
 
-                if (!availability.getAvailable()) {
-                    throw new RuntimeException("Producto no disponible: " + itemDTO.getProductHawa() +
-                            " - " + availability.getMessage());
-                }
-
-                if (availability.getStock() < itemDTO.getQuantity()) {
-                    throw new RuntimeException("Stock insuficiente para producto: " + itemDTO.getProductHawa() +
-                            ". Stock disponible: " + availability.getStock() +
-                            ", Solicitado: " + itemDTO.getQuantity());
-                }
+            if (!availability.getAvailable()) {
+                throw new BusinessException("Producto no disponible: " + itemDTO.getProductHawa() +
+                        " - " + availability.getMessage(), HttpStatus.NOT_FOUND);
             }
 
-            Order order = Order.builder()
-                    .storeId(createDTO.getStoreId())
-                    .sellerName(createDTO.getSellerName())
-                    .customer(mapToCustomerEntity(createDTO.getCustomer()))
-                    .status(OrderStatus.PENDIENTE)
-                    .comments(createDTO.getComments())
-                    .userIp(createDTO.getUserIp())
+            if (availability.getStock() < itemDTO.getQuantity()) {
+                throw new BusinessException("Stock insuficiente para producto: " + itemDTO.getProductHawa() +
+                        ". Stock disponible: " + availability.getStock() +
+                        ", Solicitado: " + itemDTO.getQuantity(), HttpStatus.NOT_FOUND);
+            }
+        }
+
+        Order order = Order.builder()
+                .storeId(createDTO.getStoreId())
+                .sellerName(createDTO.getSellerName())
+                .customer(mapToCustomerEntity(createDTO.getCustomer()))
+                .status(OrderStatus.PENDIENTE)
+                .comments(createDTO.getComments())
+                .userIp(createDTO.getUserIp())
+                .build();
+
+        for (OrderItemCreateDTO itemDTO : createDTO.getItems()) {
+            InventoryProductDTO product = inventoryService.getProduct(itemDTO.getProductHawa());
+
+            OrderItem orderItem = OrderItem.builder()
+                    .productHawa(product.getHawa())
+                    .productName(product.getName())
+                    .quantity(itemDTO.getQuantity())
+                    .unitPrice(product.getListPrice())
+                    .discountPercentage(product.getDiscount())
                     .build();
 
-            for (OrderItemCreateDTO itemDTO : createDTO.getItems()) {
-                InventoryProductDTO product = inventoryService.getProduct(itemDTO.getProductHawa());
-
-                OrderItem orderItem = OrderItem.builder()
-                        .productHawa(product.getHawa())
-                        .productName(product.getName())
-                        .quantity(itemDTO.getQuantity())
-                        .unitPrice(product.getListPrice())
-                        .discountPercentage(product.getDiscount())
-                        .build();
-
-                order.addItem(orderItem);
-            }
-
-            order = orderRepository.save(order);
-            log.info("Pedido creado con ID: {}", order.getId());
-
-            for (OrderItem item : order.getItems()) {
-                boolean stockDecremented = inventoryService.decrementStock(
-                        item.getProductHawa(),
-                        item.getQuantity()
-                );
-
-                if (!stockDecremented) {
-                    log.warn("No se pudo decrementar stock para producto: {}", item.getProductHawa());
-                }
-            }
-
-            return mapToOrderResponseDTO(order);
-
-        } catch (Exception e) {
-            log.error("Error creando pedido: {}", e.getMessage());
-            throw new RuntimeException("Error al crear el pedido: " + e.getMessage());
+            order.addItem(orderItem);
         }
+
+        order = orderRepository.save(order);
+        log.info("Pedido creado con ID: {}", order.getId());
+
+        for (OrderItem item : order.getItems()) {
+            boolean stockDecremented = inventoryService.decrementStock(
+                    item.getProductHawa(),
+                    item.getQuantity()
+            );
+
+            if (!stockDecremented) {
+                log.warn("No se pudo decrementar stock para producto: {}", item.getProductHawa());
+            }
+        }
+
+        return mapToOrderResponseDTO(order);
+
     }
 
     @Transactional(readOnly = true)
@@ -131,7 +128,7 @@ public class OrderBusinessImpl implements OrderBusiness {
         log.info("Actualizando estatus del pedido ID: {} a {}", id, statusDTO.getStatus());
 
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + id));
+                .orElseThrow(() -> new BusinessException("Pedido no encontrado con ID: " + id, HttpStatus.BAD_REQUEST));
 
         OrderStatus newStatus = OrderStatus.valueOf(statusDTO.getStatus());
         OrderStatus previousStatus = order.getStatus();
@@ -153,7 +150,7 @@ public class OrderBusinessImpl implements OrderBusiness {
     public List<OrderSummaryDTO> searchOrdersByCustomer(String customerName) {
         log.info("Buscando pedidos por cliente: {}", customerName);
 
-        return orderRepository.findByCustomerNameContainingIgnoreCase(customerName)
+        return orderRepository.findByCustomerName(customerName)
                 .stream()
                 .map(this::mapToOrderSummaryDTO)
                 .collect(Collectors.toList());
@@ -176,8 +173,6 @@ public class OrderBusinessImpl implements OrderBusiness {
     public OrderStatsDTO getOrderStatistics() {
         log.info("Obteniendo estadísticas de pedidos");
 
-        List<Object[]> statsByStatus = orderRepository.getTotalsByStatus();
-
         return OrderStatsDTO.builder()
                 .totalOrders(orderRepository.count())
                 .pendingOrders(orderRepository.countByStatus(OrderStatus.PENDIENTE))
@@ -190,15 +185,15 @@ public class OrderBusinessImpl implements OrderBusiness {
         OrderStatus currentStatus = order.getStatus();
 
         if (currentStatus == newStatus) {
-            throw new RuntimeException("El pedido ya tiene el estatus: " + newStatus);
+            throw new BusinessException("El pedido ya tiene el estatus: " + newStatus, HttpStatus.BAD_REQUEST);
         }
 
         if (currentStatus != OrderStatus.PENDIENTE) {
-            throw new RuntimeException("Solo se puede cambiar el estatus de pedidos pendientes");
+            throw new BusinessException("Solo se puede cambiar el estatus de pedidos pendientes", HttpStatus.BAD_REQUEST);
         }
 
         if (newStatus == OrderStatus.CANCELADO && !order.canBeCancelled()) {
-            throw new RuntimeException("No se puede cancelar el pedido. Han pasado más de 10 minutos desde su creación.");
+            throw new BusinessException("No se puede cancelar el pedido. Han pasado más de 10 minutos desde su creación.", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -221,9 +216,6 @@ public class OrderBusinessImpl implements OrderBusiness {
                 }
             }
         }
-
-        // Si el pedido se entrega, el stock ya fue decrementado al crear el pedido
-        // No se requiere acción adicional
     }
 
     private Customer mapToCustomerEntity(CustomerDTO dto) {

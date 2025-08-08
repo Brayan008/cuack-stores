@@ -1,11 +1,13 @@
 package com.cuackstore.inventory.service.impl;
 
+import com.cuackstore.commons.dto.JwtStructure;
 import com.cuackstore.commons.dto.products.ProductCreateDTO;
 import com.cuackstore.commons.dto.products.ProductResponseDTO;
 import com.cuackstore.commons.dto.stock.AvailabilityResponseDTO;
 import com.cuackstore.commons.dto.stock.StockOperationDTO;
 import com.cuackstore.commons.dto.stock.StockUpdateDTO;
 import com.cuackstore.commons.exceptions.ServicesException;
+import com.cuackstore.commons.utils.JwtUtils;
 import com.cuackstore.inventory.entity.Product;
 import com.cuackstore.inventory.repository.ProductRepository;
 import com.cuackstore.inventory.service.ProductService;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final JwtUtils jwtUtils;
 
     @Override
     public Flux<ProductResponseDTO> getAllProducts() {
@@ -69,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Mono<ProductResponseDTO> createProduct(ProductCreateDTO createDTO) {
+    public Mono<ProductResponseDTO> createProduct(String token, ProductCreateDTO createDTO) {
         log.info("Creando producto con HAWA: {}", createDTO.getHawa());
 
         return productRepository.countByHawa(createDTO.getHawa())
@@ -78,6 +81,7 @@ public class ProductServiceImpl implements ProductService {
                         return Mono.error(new ServicesException("Ya existe un producto con HAWA: " + createDTO.getHawa(), HttpStatus.BAD_REQUEST));
                     }
 
+                    JwtStructure jwtStructure = this.jwtUtils.getJwtStructure(token);
                     Product product = Product.builder()
                             .hawa(createDTO.getHawa())
                             .name(createDTO.getName())
@@ -87,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
                             .stock(createDTO.getStock())
                             .available(createDTO.getAvailable() != null ? createDTO.getAvailable() : true)
                             .createdAt(LocalDateTime.now())
-                            .createdBy("system") // En un caso real, obtener del contexto de seguridad
+                            .createdBy(jwtStructure.getEmail())
                             .build();
 
                     return productRepository.save(product);
@@ -101,6 +105,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Actualizando stock para HAWA: {} a {}", hawa, stockUpdateDTO.getStock());
 
         return productRepository.updateStockByHawa(hawa, stockUpdateDTO.getStock())
+                .switchIfEmpty(Mono.error(new ServicesException("Producto no encontrado con HAWA: " + hawa, HttpStatus.NOT_FOUND)))
                 .flatMap(rowsUpdated -> {
                     if (rowsUpdated == 0) {
                         return Mono.error(new ServicesException("Producto no encontrado con HAWA: " + hawa, HttpStatus.NOT_FOUND));
@@ -117,9 +122,6 @@ public class ProductServiceImpl implements ProductService {
 
         return productRepository.incrementStock(hawa, operationDTO.getQuantity())
                 .flatMap(rowsUpdated -> {
-                    if (rowsUpdated == 0) {
-                        return Mono.error(new ServicesException("Producto no encontrado con HAWA: " + hawa, HttpStatus.NOT_FOUND));
-                    }
                     return productRepository.findByHawa(hawa);
                 })
                 .map(this::mapToResponseDTO)
@@ -159,6 +161,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Actualizando disponibilidad para HAWA: {} a {}", hawa, available);
 
         return productRepository.updateAvailabilityByHawa(hawa, available)
+                .switchIfEmpty(Mono.error(new ServicesException("Producto no encontrado con HAWA: " + hawa, HttpStatus.NOT_FOUND)))
                 .flatMap(rowsUpdated -> {
                     if (rowsUpdated == 0) {
                         return Mono.error(new ServicesException("Producto no encontrado con HAWA: " + hawa, HttpStatus.NOT_FOUND));

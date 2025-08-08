@@ -13,7 +13,7 @@ public interface ProductService {
     Mono<ProductResponseDTO> getProductByHawa(String hawa);
     Mono<AvailabilityResponseDTO> checkAvailability(String hawa);
     Flux<ProductResponseDTO> getAvailableProducts();
-    Mono<ProductResponseDTO> createProduct(ProductCreateDTO createDTO);
+    Mono<ProductResponseDTO> createProduct(String token, ProductCreateDTO createDTO);
     Mono<ProductResponseDTO> updateStock(String hawa, StockUpdateDTO stockUpdateDTO);
     Mono<ProductResponseDTO> incrementStock(String hawa, StockOperationDTO operationDTO);
     Mono<ProductResponseDTO> decrementStock(String hawa, StockOperationDTO operationDTO);

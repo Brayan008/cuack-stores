@@ -1,6 +1,7 @@
 package com.cuackstore.commons;
 
 import com.cuackstore.commons.dto.ApiResponseDTO;
+import com.cuackstore.commons.exceptions.BusinessException;
 import com.cuackstore.commons.exceptions.ServicesException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -19,6 +20,12 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ServicesException.class)
     public ResponseEntity<Object> handleBusinessException(ServicesException ex) {
         log.info("ServicesException {} {}", ex.getMessage());
+        return new ResponseEntity<>(ApiResponseDTO.handleBuild(null, ex.getMessage()), ex.getHttpStatus());
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<Object> handleBusinessException(BusinessException ex) {
+        log.info("BusinessException {} {}", ex.getMessage());
         return new ResponseEntity<>(ApiResponseDTO.handleBuild(null, ex.getMessage()), ex.getHttpStatus());
     }
 
