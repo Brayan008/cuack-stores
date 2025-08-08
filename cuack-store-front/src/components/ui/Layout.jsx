@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
       <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
         <Container>
           <Navbar.Brand href="/">
-            🦆 Cuack Stores - Cheyenes
+            🦆 Cuack Store
           </Navbar.Brand>
           
           {isAuthenticated && (

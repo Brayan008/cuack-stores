@@ -1,4 +1,4 @@
-# 🛒 Cuack Store - Examen Técnico Fullstack
+# 🛒 Cuack Store
 
 Este proyecto es una solución fullstack desarrollada como parte de un examen técnico para la vacante de desarrollador Fullstack. La aplicación permite gestionar pedidos de camionetas, validar disponibilidad en inventario antes de confirmar el pedido, y mantener trazabilidad mediante auditoría.
 
@@ -62,6 +62,7 @@ Este proyecto es una solución fullstack desarrollada como parte de un examen t�
 
 El proyecto sigue un enfoque de microservicios con frontend desacoplado. El Gateway expone los servicios y controla la autenticación. La comunicación entre microservicios se maneja vía Eureka (Service Discovery). Se intento realizar via zuul pero dio problemas de incompatibilidad, otra opcion fue consul.
 
+`
     [Usuario] ⇄ [Frontend React]
                ↓
         [Gateway Server]
@@ -71,6 +72,8 @@ El proyecto sigue un enfoque de microservicios con frontend desacoplado. El Gate
 Orders Service Inventory Service
               ↓ ↓
     [SQL Server Database]
+
+`
 
 ## 📦 Estructura del proyecto
 cuack-store/

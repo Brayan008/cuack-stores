@@ -307,7 +307,6 @@ const OrderForm = () => {
                 </Card.Body>
               </Card>
 
-              {/* Comments */}
               <FormGroup className="mb-4">
                 <FormLabel>Comentarios (opcional)</FormLabel>
                 <Field
@@ -318,7 +317,6 @@ const OrderForm = () => {
                 />
               </FormGroup>
 
-              {/* Submit Button */}
               <div className="d-grid">
                 <Button
                   type="submit"

@@ -15,7 +15,7 @@ const HomePage = () => {
               <Card.Body className="py-5">
                 <div className="mb-4">
                   <h1 className="display-4">🦆</h1>
-                  <h2>Tiendas Patito</h2>
+                  <h2>Cuack Store</h2>
                   <p className="lead text-muted">
                     Sistema de Gestión de Pedidos de Camionetas
                   </p>
@@ -29,12 +29,6 @@ const HomePage = () => {
                     </p>
                   </Card.Body>
                 </Card>
-
-                <div className="d-grid gap-2">
-                  <p className="text-muted">
-                    Utilice sus credenciales para acceder al sistema
-                  </p>
-                </div>
               </Card.Body>
             </Card>
           </Col>
